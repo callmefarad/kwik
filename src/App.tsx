@@ -5,12 +5,14 @@ import "./App.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import PrivateRoute from "./routes/PrivateRoute";
 import { PublicRoute } from "./routes/PublicRoute";
+import { Toaster } from "@/components/ui/toaster";
 
 function App() {
-	const [user, setUser] = useState(null);
+	const [user, setUser] = useState(true);
 
 	return (
 		<>
+			<Toaster />
 			<RouterProvider
 				router={createBrowserRouter([
 					user ? PrivateRoute() : {},
