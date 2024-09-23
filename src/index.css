@@ -5,6 +5,9 @@
 body {
 	font-family: "Montserrat", sans-serif;
 	background-color: #fbfbfb;
+	width: 100%;
+	margin: 0;
+	padding: 0;
 }
 @layer base {
 	:root {

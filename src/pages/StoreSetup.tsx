@@ -7,16 +7,19 @@ import { ImagePlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 import QRCode from "qrcode";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { CreatingStore } from "@/utils/ApiCalls";
+import LoaderComponent from "@/components/LoadingComponent";
 
 export default function Component() {
 	const { toast } = useToast();
 	const [currentStep, setCurrentStep] = useState(1);
-	const [storeLink, setStoreLink] = useState(
-		"https://simpu.web.app/alibusinesscenter",
-	);
+	const [storeLink, setStoreLink] = useState("");
 	const [productImage, setProductImage] = useState<string | null>(null);
 	const [qrCodeDataURL, setQRCodeDataURL] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+	const [storeData, setStoreData] = useState<any>();
 
 	const [shopName, setShopName] = useState("");
 	const [shopAddress, setShopAddress] = useState("");
@@ -59,6 +62,7 @@ export default function Component() {
 				});
 				return;
 			}
+			onSubmitStore();
 			if (currentStep === 3 && (!productImage || !productName || !price)) {
 				toast({
 					title: "Error",
@@ -119,6 +123,61 @@ export default function Component() {
 		}
 	};
 
+	const dispatch = useDispatch();
+	const navigate = useNavigate();
+	const [load, setLoad] = useState(false);
+
+	async function onSubmitStore() {
+		try {
+			setLoad(true);
+			const response: any = await CreatingStore({
+				storeName: shopName,
+				address: shopAddress,
+				country,
+			});
+
+			console.log(response);
+			// Handle successful registration
+			if (response?.status === 201) {
+				// Optionally dispatch user details to the store
+				setStoreLink(response?.data?.store?.storeLink);
+				console.log('i ran ', response?.data?.store);
+				toast({
+					title: "Success!",
+					description: "Store Created successful.",
+				});
+				// navigate("/store-setup");
+			} else if (response?.status >= 300 && response?.status < 400) {
+				toast({
+					title: "Error",
+					description: "Redirection error. Please try again.",
+					variant: "destructive",
+				});
+			} else if (response?.status >= 400 && response?.status < 500) {
+				toast({
+					title: "Error",
+					description: "Client error. Please check your input.",
+					variant: "destructive",
+				});
+			} else if (response?.status >= 500 && response?.status < 600) {
+				toast({
+					title: "Error",
+					description: "Server error. Please try again later.",
+					variant: "destructive",
+				});
+			}
+		} catch (error) {
+			toast({
+				title: "Error",
+				description: "An error occurred during registration. Please try again.",
+				variant: "destructive",
+			});
+		} finally {
+			setLoad(false); // Ensure this runs regardless of success or error
+		}
+	}
+	if (load) return <LoaderComponent />;
+
 	return (
 		<div className='max-w-2xl mx-auto p-4'>
 			<h1 className='text-3xl font-bold text-center mb-2'>Setup Your Store</h1>
@@ -159,10 +218,10 @@ export default function Component() {
 									<div>
 										<Label htmlFor='shopName'>Shop Name</Label>
 										<Input
+											name='storeName'
 											id='shopName'
 											placeholder='Enter your shop name'
 											required
-											value={shopName}
 											onChange={(e) => setShopName(e.target.value)}
 										/>
 									</div>

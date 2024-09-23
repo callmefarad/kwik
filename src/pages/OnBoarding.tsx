@@ -30,9 +30,9 @@ const OnBoarding = () => {
 							</div>
 						</h1>
 						<p className='mt-8 text-gray-700'>
-							Lorem ipsum, dolor sit amet consectetur adipisicing elit. Dolores
-							repellat perspiciatis aspernatur quis voluptatum porro incidunt,
-							libero sequi quos eos velit
+							Empowering Small Businesses to Succeed Online – Kwik simplifies
+							your journey, giving you the tools to grow, connect, and thrive in
+							the digital marketplace.
 						</p>
 						<div className='mt-10  w-full flex max-w-md mx-auto lg:mx-0'>
 							<Link to='/signup'>

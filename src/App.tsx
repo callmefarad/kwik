@@ -15,8 +15,7 @@ function App() {
 			<Toaster />
 			<RouterProvider
 				router={createBrowserRouter([
-					user ? PrivateRoute() : {},
-					...PublicRoute(),
+					...(user ? PrivateRoute() : PublicRoute()),
 				])}
 			/>
 		</>
