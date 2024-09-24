@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import QRCode from "qrcode";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { CreatingStore } from "@/utils/ApiCalls";
+import { CreateNewProduct, CreatingStore } from "@/utils/ApiCalls";
 import LoaderComponent from "@/components/LoadingComponent";
 
 export default function Component() {
@@ -19,13 +19,16 @@ export default function Component() {
 	const [productImage, setProductImage] = useState<string | null>(null);
 	const [qrCodeDataURL, setQRCodeDataURL] = useState<string | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-	const [storeData, setStoreData] = useState<any>();
+	const [storeDataId, setStoreDataId] = useState<any>();
 
 	const [shopName, setShopName] = useState("");
 	const [shopAddress, setShopAddress] = useState("");
 	const [country, setCountry] = useState("");
 	const [productName, setProductName] = useState("");
 	const [price, setPrice] = useState("");
+	const [image, setImage] = useState<any>();
+	const [description, setDescription] = useState("This is a wonderful product");
+	const [category, setCategory] = useState("General Merchandise");
 
 	const steps = [
 		{ number: 1, title: "Basic Info" },
@@ -42,43 +45,42 @@ export default function Component() {
 			const dataURL = await QRCode.toDataURL(storeLink);
 			setQRCodeDataURL(dataURL);
 		} catch (error) {
-			console.error("Error generating QR code:", error);
-			toast({
-				title: "Error",
-				description: "Failed to generate QR code",
-				variant: "destructive",
-			});
+			// console.error("Error generating QR code:", error);
+			// toast({
+			// title: "Error",
+			// description: "Failed to generate QR code",
+			// variant: "destructive",
+			// });
 		}
 	};
 
 	const handleNext = (e: FormEvent) => {
 		e.preventDefault();
-		if (currentStep < steps.length) {
-			if (currentStep === 1 && (!shopName || !shopAddress || !country)) {
-				toast({
-					title: "Error",
-					description: "Please fill all required fields",
-					variant: "destructive",
-				});
-				return;
+
+		// If the current step is within the range
+		if (currentStep <= steps.length) {
+			if (currentStep === 1) {
+				// Validate required fields for step 1
+
+				onSubmitStore();
 			}
-			onSubmitStore();
-			if (currentStep === 3 && (!productImage || !productName || !price)) {
-				toast({
-					title: "Error",
-					description: "Please fill all required fields and upload an image",
-					variant: "destructive",
-				});
-				return;
+
+			if (currentStep === 3) {
+				// Validate required fields for step 3
+				onHandleUploadProduct();
+				return; // Stop further execution
 			}
-			setCurrentStep(currentStep + 1);
-		} else {
-			// Handle form submission
-			toast({
-				title: "Success",
-				description: "Store setup completed!",
-			});
+
+			// If all validations pass, move to the next step
+			setCurrentStep((prevStep) => prevStep + 1);
+			return; // Stop further execution
 		}
+
+		// If currentStep >= steps.length, the form is complete
+		toast({
+			title: "Success",
+			description: "Store setup completed!",
+		});
 	};
 
 	const copyToClipboard = async () => {
@@ -99,6 +101,7 @@ export default function Component() {
 
 	const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
+		setImage(file);
 		if (file) {
 			const reader = new FileReader();
 			reader.onloadend = () => {
@@ -141,7 +144,8 @@ export default function Component() {
 			if (response?.status === 201) {
 				// Optionally dispatch user details to the store
 				setStoreLink(response?.data?.store?.storeLink);
-				console.log('i ran ', response?.data?.store);
+				setStoreDataId(response?.data?.store?._id);
+				console.log("i ran ", response?.data?.store);
 				toast({
 					title: "Success!",
 					description: "Store Created successful.",
@@ -176,6 +180,27 @@ export default function Component() {
 			setLoad(false); // Ensure this runs regardless of success or error
 		}
 	}
+
+	const onHandleUploadProduct = async () => {
+		setLoad(true);
+		const formData = new FormData();
+		formData.append("image", image);
+		formData.append("name", productName);
+		formData.append("price", price);
+		formData.append("description", description);
+		formData.append("category", category);
+		const response: any = await CreateNewProduct(storeDataId, formData);
+		console.log("product created", response);
+		if (response?.data?.success) {
+			setLoad(false);
+			toast({
+				title: "Success!",
+				description: "Product Uploaded successful.",
+			});
+		} else {
+			setLoad(false);
+		}
+	};
 	if (load) return <LoaderComponent />;
 
 	return (

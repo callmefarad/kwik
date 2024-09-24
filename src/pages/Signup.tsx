@@ -108,7 +108,7 @@ export default function SignUp() {
 
 	return (
 		<div className='bg-bodyColor w-full h-full'>
-			<Card className='w-full max-w-4xl mx-auto text-left'>
+			<Card className='w-full max-w-4xl mx-auto text-left xl:mt-20'>
 				<CardHeader>
 					<CardTitle className='text-2xl font-bold'>
 						Create an account

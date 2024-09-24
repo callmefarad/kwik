@@ -16,11 +16,11 @@ export const api = createApi({
 	}),
 	tagTypes: ["stores", "products"],
 	endpoints: (builder: any) => ({
-		viewAllProducts: builder.query({
-			query: () => `/products`,
-			providesTags: ["products"],
+		getStoreByOwner: builder.query({
+			query: () => `/store/get-single`,
+			providesTags: ["stores"],
 		}),
 	}),
 });
 
-export const { useViewAllProductsQuery } = api;
+export const { useGetStoreByOwnerQuery } = api;

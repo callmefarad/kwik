@@ -34,7 +34,7 @@ const OnBoarding = () => {
 							your journey, giving you the tools to grow, connect, and thrive in
 							the digital marketplace.
 						</p>
-						<div className='mt-10  w-full flex max-w-md mx-auto lg:mx-0'>
+						<div className='mt-10  justify-center items-center lg:justify-start lg:items-start  w-full flex max-w-md mx-auto lg:mx-0'>
 							<Link to='/signup'>
 								<ButtonGroup />
 							</Link>

@@ -38,6 +38,19 @@ export const getUserDetails = async () => {
 	}
 };
 
+export const CreateNewProduct = async (id: any, data: any) => {
+	try {
+		const response = await Instance.post(`/${id}/create-store`, data, {
+			headers: {
+				"Content-Type": "multipart/form-data",
+			},
+		});
+		return response;
+	} catch (err) {
+		return err;
+	}
+};
+
 export const getAllProducts = async () => {
 	try {
 		const response = await Instance.get("/customer/home");

@@ -1,93 +1,113 @@
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addToCart } from "@/services/reducers";
+import { useToast } from "@/hooks/use-toast";
 
 const products = [
 	{
+		id: 1,
 		name: "Colgate Family Toothpaste",
-		price: "₦1,900",
+		price: 1900,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 2,
 		name: "Evaporated Peak Milk",
-		price: "₦800",
+		price: 920,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 3,
 		name: "Softwave Tissue Paper",
-		price: "₦300",
+		price: 560,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 4,
 		name: "Kemps Cream Crackers",
-		price: "₦100",
+		price: 100,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 5,
 		name: "Kemps Cream Crackers",
-		price: "₦100",
+		price: 100,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 6,
 		name: "Eva Family Soap",
-		price: "₦700",
+		price: 500,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 7,
 		name: "Wisdom ToothBrush",
-		price: "₦350",
+		price: 350,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 8,
 		name: "Premier Cool Soap",
-		price: "₦250",
+		price: 700,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 9,
 		name: "Viva Plus Detergent",
-		price: "₦350",
+		price: 250,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 10,
 		name: "Viva Plus Detergent",
-		price: "₦350",
+		price: 200,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 11,
 		name: "Eva Family Soap",
-		price: "₦700",
+		price: 110,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 12,
 		name: "Wisdom ToothBrush",
-		price: "₦350",
+		price: 200,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 13,
 		name: "Premier Cool Soap",
-		price: "₦250",
+		price: 500,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 14,
 		name: "Viva Plus Detergent",
-		price: "₦350",
+		price: 100,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 	{
+		id: 4,
 		name: "Viva Plus Detergent",
-		price: "₦350",
+		price: 190,
 		image: "/placeholder.svg?height=100&width=100",
 	},
 ];
 
 const Home = () => {
+	const dispatch = useDispatch();
+	const { toast } = useToast();
 	return (
 		<div className='min-h-screen flex flex-col w-full'>
 			<main className='flex-grow p-4'>
-				<h2 className='text-3xl font-bold text-center mb-2'>Shop</h2>
+				<h2 className='text-3xl font-bold text-center mb-2'>Ali Shop</h2>
 				<p className='text-center mb-8 text-muted-foreground'>Make Purchase</p>
 				<div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4'>
-					{products.map((product, index) => (
+					{products.map((product: any, index) => (
 						<div
 							key={index}
 							className='border rounded-lg p-4 flex flex-col items-center'>
@@ -100,7 +120,16 @@ const Home = () => {
 							<p className='text-sm text-muted-foreground mb-2'>
 								{product.price}
 							</p>
-							<Button size='sm' className='mt-auto bg-blue-600 text-white'>
+							<Button
+								onClick={() => {
+									dispatch(addToCart(product));
+									toast({
+										title: "Success!",
+										description: "Item added to cart.",
+									});
+								}}
+								size='sm'
+								className='mt-auto bg-blue-600 text-white'>
 								Add to Cart
 							</Button>
 						</div>

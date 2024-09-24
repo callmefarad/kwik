@@ -9,13 +9,16 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { useGetStoreByOwnerQuery } from "@/services/apiSlice";
 
 export default function Overview() {
+	const { data } = useGetStoreByOwnerQuery({});
+	console.log(data);
 	return (
 		<>
 			<div className='flex justify-between items-center mb-8'>
 				<div>
-					<h2 className='text-2xl font-bold'>Good Afternoon, Ali</h2>
+					<h2 className='text-2xl font-bold'>Good Day, Ali</h2>
 					<p className='text-gray-600'>Hope You're having a great Day</p>
 				</div>
 			</div>

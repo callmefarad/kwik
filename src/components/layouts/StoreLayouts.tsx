@@ -8,7 +8,7 @@ export default function StoreLayouts() {
 		<div className='flex flex-col lg:flex-row min-h-screen  text-left'>
 			{/* Sidebar */}
 			<aside className='fixed top-0 left-0 w-full lg:w-64 bg-white p-4 lg:min-h-screen h-screen z-10 border-r hidden xl:block md:block'>
-				<h1 className='text-2xl font-bold mb-8'>KIWI</h1>
+				<h1 className='text-2xl font-bold mb-8'>KWIK</h1>
 				<nav className='space-y-2'>
 					<Link to='/app/store'>
 						<a
@@ -60,7 +60,7 @@ export default function StoreLayouts() {
 				</header>
 
 				{/* Offset for fixed header */}
-				<div className='pt-16 '>
+				<div className='p-5 xl:p-12 pt-20 xl:pt-28'>
 					<Outlet />
 				</div>
 			</main>
