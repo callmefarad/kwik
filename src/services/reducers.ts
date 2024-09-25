@@ -16,16 +16,16 @@ type CartItem = {
 	image?: string;
 };
 
+type PaymentType = {
+	transaction_reference: string;
+	amount: number;
+};
+
 export interface AddressType {
-	id?: string;
-	fullname?: string;
-	phone?: string;
+	name: string;
+	email: string;
 	address: string;
-	state?: string;
-	city?: string;
-	street?: string; //required
-	postalCode?: string; //required
-	country?: string; //required
+	phoneNumber: string;
 }
 
 const initialState = {
@@ -35,6 +35,7 @@ const initialState = {
 	totalQuantity: 0,
 	cartQuantity: 0,
 	addresses: {} as AddressType,
+	paymentDetails: {} as PaymentType,
 };
 
 export const Reducers = createSlice({
@@ -43,6 +44,14 @@ export const Reducers = createSlice({
 	reducers: {
 		updateUserDetails: (state, action: PayloadAction<UserDetails>) => {
 			state.currentUser = action.payload;
+		},
+
+		setUserDetails: (state, action: PayloadAction<AddressType>) => {
+			state.addresses = action.payload;
+		},
+
+		storePaymentDetails: (state, action: PayloadAction<PaymentType>) => {
+			state.paymentDetails = action.payload;
 		},
 
 		logoutUser: () => initialState,
@@ -103,12 +112,14 @@ export const Reducers = createSlice({
 
 export const {
 	updateUserDetails,
+	setUserDetails,
 	logoutUser,
 	addToCart,
 	clearCart,
 	removeFromCart,
 	addAddress,
 	removeAProductCart,
+	storePaymentDetails,
 } = Reducers.actions;
 
 export default Reducers.reducer;

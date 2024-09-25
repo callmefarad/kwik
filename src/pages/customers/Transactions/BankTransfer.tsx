@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useSelector, useDispatch } from "react-redux";
+import { setUserDetails } from "@/services/reducers";
 
 interface VirtualAccountProps {
 	accountName: string;
@@ -30,8 +32,17 @@ export default function BankTransfer({
 	amount = 1000,
 	currency = "USD",
 }: VirtualAccountProps) {
+	const dispatch = useDispatch();
+
+	// Access user details from Redux state
+	const user = useSelector(
+		(state: any) => state?.persistedReducer?.addresses || {},
+	);
+	const { name, email, address, phoneNumber } = user;
+
 	const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
 	const [transferConfirmed, setTransferConfirmed] = useState(false);
+	const [isEditingAddress, setIsEditingAddress] = useState(false);
 
 	useEffect(() => {
 		if (timeLeft > 0 && !transferConfirmed) {
@@ -50,6 +61,12 @@ export default function BankTransfer({
 		setTransferConfirmed(true);
 	};
 
+	const handleSaveDetails = (e: React.FormEvent) => {
+		e.preventDefault();
+		dispatch(setUserDetails({ name, email, address, phoneNumber }));
+		setIsEditingAddress(false);
+	};
+
 	return (
 		<Card className='w-full max-w-md mx-auto mt-20 mb-20'>
 			<CardHeader>
@@ -58,7 +75,76 @@ export default function BankTransfer({
 					Please transfer {currency} {amount} to the following account
 				</CardDescription>
 			</CardHeader>
+
 			<CardContent className='space-y-4'>
+				{/* Display selected address and edit button */}
+				{name && email && address && phoneNumber && !isEditingAddress ? (
+					<>
+						<div className='mb-4'>
+							<p className='font-semibold'>Selected Address:</p>
+							<p>{address}</p>
+							<Button
+								variant='outline'
+								className='mt-2'
+								onClick={() => setIsEditingAddress(true)}>
+								Edit Address
+							</Button>
+						</div>
+					</>
+				) : (
+					<form onSubmit={handleSaveDetails} className='space-y-4'>
+						{/* Address edit form */}
+						<div>
+							<Label htmlFor='name'>Name</Label>
+							<Input
+								id='name'
+								value={name || ""}
+								onChange={(e) =>
+									dispatch(setUserDetails({ ...user, name: e.target.value }))
+								}
+								placeholder='Your Name'
+							/>
+						</div>
+						<div>
+							<Label htmlFor='email'>Email</Label>
+							<Input
+								id='email'
+								value={email || ""}
+								onChange={(e) =>
+									dispatch(setUserDetails({ ...user, email: e.target.value }))
+								}
+								placeholder='Your Email'
+							/>
+						</div>
+						<div>
+							<Label htmlFor='address'>Address</Label>
+							<Input
+								id='address'
+								value={address || ""}
+								onChange={(e) =>
+									dispatch(setUserDetails({ ...user, address: e.target.value }))
+								}
+								placeholder='Your Address'
+							/>
+						</div>
+						<div>
+							<Label htmlFor='phoneNumber'>Phone Number</Label>
+							<Input
+								id='phoneNumber'
+								value={phoneNumber || ""}
+								onChange={(e) =>
+									dispatch(
+										setUserDetails({ ...user, phoneNumber: e.target.value }),
+									)
+								}
+								placeholder='Your Phone Number'
+							/>
+						</div>
+						<Button type='submit'>Save Details</Button>
+					</form>
+				)}
+
+				{/* Virtual bank account details */}
 				<div className='space-y-2'>
 					<Label htmlFor='accountName'>Account Name</Label>
 					<Input id='accountName' value={accountName} readOnly />
@@ -85,6 +171,7 @@ export default function BankTransfer({
 					</div>
 				)}
 			</CardContent>
+
 			<CardFooter>
 				<Button
 					className='w-full'

@@ -51,9 +51,9 @@ export const CreateNewProduct = async (id: any, data: any) => {
 	}
 };
 
-export const getAllProducts = async () => {
+export const CreatingCardPayment = async (data: any) => {
 	try {
-		const response = await Instance.get("/customer/home");
+		const response = await Instance.post("/create-payment", data);
 		return response;
 	} catch (err) {
 		return err;

@@ -8,6 +8,7 @@ import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import OnBoarding from "@/pages/OnBoarding";
 import SignUp from "@/pages/Signup";
+import SuccessPayment from "@/pages/SuccessPayment";
 
 export const PublicRoute = () => {
 	return [
@@ -57,6 +58,11 @@ export const PublicRoute = () => {
 					],
 				},
 			],
+		},
+
+		{
+			path: "success-payment",
+			element: <SuccessPayment />,
 		},
 
 		{
