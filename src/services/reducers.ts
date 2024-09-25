@@ -9,7 +9,7 @@ interface UserDetails {
 }
 
 type CartItem = {
-	id: number;
+	_id: number;
 	name: string;
 	price: number;
 	quantity: number;
@@ -57,7 +57,7 @@ export const Reducers = createSlice({
 
 		addToCart: (state, action: PayloadAction<CartItem>) => {
 			const existingItem = state.cart.find(
-				(item) => item.id === action.payload.id,
+				(item) => item._id === action.payload._id,
 			);
 
 			if (existingItem) {
@@ -72,14 +72,14 @@ export const Reducers = createSlice({
 
 		removeFromCart: (state, action: PayloadAction<number>) => {
 			const existingItem = state.cart.find(
-				(item) => item.id === action.payload,
+				(item) => item._id === action.payload,
 			);
 			if (existingItem) {
 				existingItem.quantity -= 1;
 
 				// If quantity is 0, remove the item from the cart
 				if (existingItem.quantity === 0) {
-					state.cart = state.cart.filter((item) => item.id !== action.payload);
+					state.cart = state.cart.filter((item) => item._id !== action.payload);
 				}
 
 				// Update total quantity and price
@@ -88,7 +88,9 @@ export const Reducers = createSlice({
 			}
 		},
 		removeAProductCart: (state, action: PayloadAction<number>) => {
-			const index = state.cart.findIndex((item) => item.id === action.payload);
+			const index = state.cart.findIndex(
+				(item) => item?._id === action.payload,
+			);
 			if (index !== -1) {
 				const itemToRemove = state.cart[index];
 				state.totalQuantity -= itemToRemove.quantity;

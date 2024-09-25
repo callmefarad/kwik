@@ -29,6 +29,7 @@ export default function Component() {
 	const [image, setImage] = useState<any>();
 	const [description, setDescription] = useState("This is a wonderful product");
 	const [category, setCategory] = useState("General Merchandise");
+	const fullUrl = "https://kwikbysimpu.web.app/store";
 
 	const steps = [
 		{ number: 1, title: "Basic Info" },
@@ -143,13 +144,15 @@ export default function Component() {
 			// Handle successful registration
 			if (response?.status === 201) {
 				// Optionally dispatch user details to the store
-				setStoreLink(response?.data?.store?.storeLink);
+				setStoreLink(
+					`${fullUrl}?storelink=${response?.data?.store?.storeLink}`,
+				);
 				setStoreDataId(response?.data?.store?._id);
 				console.log("i ran ", response?.data?.store);
-				toast({
-					title: "Success!",
-					description: "Store Created successful.",
-				});
+				// toast({
+				// title: "Success!",
+				// description: "Store Created successful.",
+				// });
 				// navigate("/store-setup");
 			} else if (response?.status >= 300 && response?.status < 400) {
 				toast({
@@ -191,12 +194,14 @@ export default function Component() {
 		formData.append("category", category);
 		const response: any = await CreateNewProduct(storeDataId, formData);
 		console.log("product created", response);
-		if (response?.data?.success) {
+		if (response?.status === 201) {
 			setLoad(false);
 			toast({
 				title: "Success!",
-				description: "Product Uploaded successful.",
+				description: "Store Setup successful.",
 			});
+
+			navigate("/app/store");
 		} else {
 			setLoad(false);
 		}

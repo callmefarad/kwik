@@ -18,41 +18,11 @@ interface Product {
 	price: number;
 }
 
-export default function ProductTable() {
+export default function ProductTable({ productData }: any) {
 	const [products, setProducts] = useState<Product[]>([]);
 	const [searchTerm, setSearchTerm] = useState("");
 
-	useEffect(() => {
-		// Simulating API call to fetch products
-		const fetchProducts = async () => {
-			// Replace this with actual API call
-			const dummyProducts: Product[] = [
-				{
-					id: "1",
-					name: "Product 1",
-					image: "/placeholder.svg?height=50&width=50",
-					price: 19.99,
-				},
-				{
-					id: "2",
-					name: "Product 2",
-					image: "/placeholder.svg?height=50&width=50",
-					price: 29.99,
-				},
-				{
-					id: "3",
-					name: "Product 3",
-					image: "/placeholder.svg?height=50&width=50",
-					price: 39.99,
-				},
-			];
-			setProducts(dummyProducts);
-		};
-
-		fetchProducts();
-	}, []);
-
-	const filteredProducts = products.filter((product) =>
+	const filteredProducts = productData?.filter((product: any) =>
 		product.name.toLowerCase().includes(searchTerm.toLowerCase()),
 	);
 
@@ -67,7 +37,7 @@ export default function ProductTable() {
 	};
 
 	return (
-		<div className='container mx-auto py-10'>
+		<div className='container mx-auto py-10 bg-white p-5 rounded-sm mt-5'>
 			<Input
 				type='search'
 				placeholder='Search products...'
@@ -81,21 +51,23 @@ export default function ProductTable() {
 						<TableHead>Image</TableHead>
 						<TableHead>Name</TableHead>
 						<TableHead>Price</TableHead>
+						<TableHead>Description</TableHead>
 						<TableHead>Actions</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
-					{filteredProducts.map((product) => (
+					{filteredProducts.map((product: any) => (
 						<TableRow key={product.id}>
 							<TableCell>
 								<img
-									src={product.image}
+									src={product.image?.url}
 									alt={product.name}
 									className='w-12 h-12 object-cover rounded'
 								/>
 							</TableCell>
 							<TableCell>{product.name}</TableCell>
-							<TableCell>${product.price.toFixed(2)}</TableCell>
+							<TableCell>#{product.price.toFixed(2)}</TableCell>
+							<TableCell>{product.description}</TableCell>
 							<TableCell>
 								<div className='flex space-x-2'>
 									<Button

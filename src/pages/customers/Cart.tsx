@@ -38,13 +38,20 @@ const Cart = () => {
 					<div className='bg-gray-100 p-8 rounded-lg mb-8'>
 						<p className='mb-4'>
 							Your Nylon is currently empty. Be sure to go to the{" "}
-							<Link to='/shop' className='text-blue-600 hover:underline'>
+							<div
+								onClick={() => navigate(-1)}
+								// to='/shop'
+								className='text-blue-600 hover:underline'>
 								shop
-							</Link>{" "}
+							</div>{" "}
 							and make Purchases
 						</p>
-						<Button size='lg' asChild className='w-full sm:w-auto'>
-							<Link to='/shop'>Back to Shop</Link>
+						<Button
+							onClick={() => navigate(-1)}
+							size='lg'
+							asChild
+							className='w-full sm:w-auto'>
+							<div>Back to Shop</div>
 						</Button>
 					</div>
 				</div>
@@ -63,12 +70,12 @@ const Cart = () => {
 								</tr>
 							</thead>
 							<tbody>
-								{cart.map((item) => (
+								{cart.map((item: any) => (
 									<tr key={item.id} className='border-b'>
 										<td className='p-2'>
 											<div className='flex items-center'>
 												<img
-													src={item.image}
+													src={item.image?.url}
 													alt={item.name}
 													className='w-16 h-16 object-cover mr-4'
 												/>

@@ -7,7 +7,7 @@ export const api = createApi({
 	baseQuery: fetchBaseQuery({
 		baseUrl: import.meta.env.VITE_REACT_APP_API_URL,
 		prepareHeaders: (headers) => {
-			const token = cookies.get("Kao_cookie_user");
+			const token = cookies.get("Kwik_store");
 			if (token) {
 				headers.set("Authorization", `Bearer ${token}`);
 			}
@@ -20,7 +20,13 @@ export const api = createApi({
 			query: () => `/store/get-single`,
 			providesTags: ["stores"],
 		}),
+
+		viewAllShopCustomerProduct: builder.query({
+			query: (quaries: any) => `/store?storeLink=${quaries}`,
+			// providesTags: ["reviews"],
+		}),
 	}),
 });
 
-export const { useGetStoreByOwnerQuery } = api;
+export const { useGetStoreByOwnerQuery, useViewAllShopCustomerProductQuery } =
+	api;

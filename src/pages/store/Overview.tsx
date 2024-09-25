@@ -12,21 +12,27 @@ import {
 import { useGetStoreByOwnerQuery } from "@/services/apiSlice";
 
 export default function Overview() {
-	const { data } = useGetStoreByOwnerQuery({});
+	const { data }: any = useGetStoreByOwnerQuery({});
 	console.log(data);
 	return (
 		<>
 			<div className='flex justify-between items-center mb-8'>
 				<div>
-					<h2 className='text-2xl font-bold'>Good Day, Ali</h2>
+					<h2 className='text-2xl font-bold'>
+						Good Day, {data?.data?.storeName}
+					</h2>
 					<p className='text-gray-600'>Hope You're having a great Day</p>
 				</div>
 			</div>
 			{/* Stats */}
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8'>
-				<StatCard icon={<Box />} title='Total Product' value='68' />
+				<StatCard
+					icon={<Box />}
+					title='Total Product'
+					value={data?.data?.products?.length || 0}
+				/>
 				<StatCard icon={<Users />} title="Today's Order" value='83' />
-				<StatCard icon={<ShoppingCart />} title='Total Order' value='37' />
+				<StatCard icon={<ShoppingCart />} title='Total Customers' value='37' />
 				<StatCard icon={<DollarSign />} title='Total Sales' value='₦20, 113' />
 			</div>
 			{/* Recent Purchases */}

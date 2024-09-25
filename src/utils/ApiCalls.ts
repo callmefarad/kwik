@@ -40,7 +40,7 @@ export const getUserDetails = async () => {
 
 export const CreateNewProduct = async (id: any, data: any) => {
 	try {
-		const response = await Instance.post(`/${id}/create-store`, data, {
+		const response = await Instance.post(`/${id}/create-product`, data, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},

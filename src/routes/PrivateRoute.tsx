@@ -4,6 +4,8 @@ import Overview from "@/pages/store/Overview";
 import Shop from "@/pages/store/Shop";
 import NotFound from "@/pages/NotFound";
 import StoreSetUp from "@/pages/StoreSetup";
+import AddNewProduct from "@/pages/store/AddNewProduct";
+import StoreSettings from "@/pages/store/Settings";
 
 const PrivateRoute = () => {
 	return [
@@ -22,6 +24,16 @@ const PrivateRoute = () => {
 				{
 					path: "shop",
 					element: <Shop />,
+				},
+
+				{
+					path: "settings",
+					element: <StoreSettings />,
+				},
+
+				{
+					path: "new-product",
+					element: <AddNewProduct />,
 				},
 			],
 		},
