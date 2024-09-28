@@ -2,10 +2,11 @@ import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { addToCart } from "@/services/reducers";
+import { addToCart, setStoreLinkId } from "@/services/reducers";
 import { useToast } from "@/hooks/use-toast";
 import { useViewAllShopCustomerProductQuery } from "@/services/apiSlice";
 import NoDataFound from "@/components/NoDataFound";
+import { useEffect } from "react";
 
 // Skeleton loader component
 const ProductSkeleton = () => (
@@ -23,8 +24,19 @@ const Home = () => {
 	const location = useLocation();
 	const queryParams = new URLSearchParams(location.search);
 	const storelink = queryParams.get("storelink");
+	console.log("this is the storeLink", storelink);
 	const { data, isLoading }: any =
 		useViewAllShopCustomerProductQuery(storelink);
+
+	// Extract the ID from the storelink
+	const storeId = storelink?.split("-").pop();
+
+	// Dispatch the ID to Redux when it exists
+	useEffect(() => {
+		if (storeId) {
+			dispatch(setStoreLinkId(storeId));
+		}
+	}, [dispatch, storeId]);
 
 	return (
 		<div className='min-h-screen flex flex-col w-full'>

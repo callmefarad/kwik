@@ -25,11 +25,17 @@ export default function VisualCardChargePayment() {
 	const totalPrice = useAppSelector(
 		(state) => state.persistedReducer.totalPrice,
 	);
+
+	const StoreId = useAppSelector((state) => state.persistedReducer.storeLinkId);
 	// Access user details from Redux state
 	const user = useSelector(
 		(state: any) => state?.persistedReducer?.addresses || {},
 	);
+
+	const cart = useAppSelector((state) => state?.persistedReducer.cart);
 	const { name, email, address, phoneNumber } = user;
+
+	console.log("this is cart", cart);
 
 	//  state for card details
 	const [cardNumber, setCardNumber] = useState("");
@@ -39,6 +45,7 @@ export default function VisualCardChargePayment() {
 	const [isEditingAddress, setIsEditingAddress] = useState(false);
 	const [pin, setPin] = useState<any>();
 
+	// editing and saving the customer address
 	const handleSaveDetails = (e: React.FormEvent) => {
 		e.preventDefault();
 		dispatch(setUserDetails({ name, email, address, phoneNumber }));
@@ -46,7 +53,7 @@ export default function VisualCardChargePayment() {
 	};
 
 	const [expiry_month, expiry_year] = expirationDate.split("/");
-
+	// payment with card charge, including the customer details, storeid, and the cart items
 	const handleOnCardChargePayment = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setIsLoading(true);
@@ -62,7 +69,18 @@ export default function VisualCardChargePayment() {
 			user: {
 				name: user?.name,
 				email: user?.email,
+				address: user?.address,
 			},
+
+			storeOwner: {
+				storeId: StoreId,
+			},
+			cart: cart.map((item) => ({
+				productId: item._id,
+				productName: item.name,
+				quantity: item.quantity,
+				price: item.price,
+			})),
 		});
 
 		console.log("data submitted", response);
@@ -83,19 +101,13 @@ export default function VisualCardChargePayment() {
 			setCvc("");
 			navigate("/success-payment");
 			setIsLoading(false);
-		} else if (
-			response?.error?.status >= 300 &&
-			response?.error?.status < 400
-		) {
+		} else if (response?.status >= 300 && response?.status < 400) {
 			toast({
 				title: "Error",
 				description: "An error occured.",
 			});
 			setIsLoading(false);
-		} else if (
-			response?.error?.status >= 400 &&
-			response?.error?.status < 600
-		) {
+		} else if (response?.status >= 400 && response?.status < 600) {
 			toast({
 				title: "Error",
 				description: "An error occured.",

@@ -13,36 +13,31 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useSelector, useDispatch } from "react-redux";
-import { setUserDetails } from "@/services/reducers";
+import { setUserDetails, storePaymentDetails } from "@/services/reducers";
+import { useAppSelector } from "@/services/store";
+import { useNavigate } from "react-router-dom";
+import { Instance } from "@/utils/AxiosConfig";
 
-interface VirtualAccountProps {
-	accountName: string;
-	accountNumber: string;
-	bankName: string;
-	swiftCode: string;
-	amount: number;
-	currency: string;
-}
-
-export default function BankTransfer({
-	accountName = "John Doe",
-	accountNumber = "1234567890",
-	bankName = "Virtual Bank Ltd.",
-	swiftCode = "VRTBNK22",
-	amount = 1000,
-	currency = "USD",
-}: VirtualAccountProps) {
+export default function BankTransfer() {
 	const dispatch = useDispatch();
+	const navigate = useNavigate();
 
 	// Access user details from Redux state
 	const user = useSelector(
 		(state: any) => state?.persistedReducer?.addresses || {},
 	);
 	const { name, email, address, phoneNumber } = user;
+	const bankAccount = useAppSelector(
+		(state) => state.persistedReducer.bankDetails,
+	);
+	const totalPrice = useAppSelector(
+		(state) => state.persistedReducer.totalPrice,
+	);
 
 	const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
 	const [transferConfirmed, setTransferConfirmed] = useState(false);
 	const [isEditingAddress, setIsEditingAddress] = useState(false);
+	const [paymentStatus, setPaymentStatus] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (timeLeft > 0 && !transferConfirmed) {
@@ -67,12 +62,46 @@ export default function BankTransfer({
 		setIsEditingAddress(false);
 	};
 
+	// Polling to check payment status from the backend after transfer is confirmed
+	useEffect(() => {
+		if (transferConfirmed) {
+			const interval = setInterval(async () => {
+				try {
+					const response: any = await Instance.get("/payments");
+					console.log("this is the payment", response);
+					const userPayment = response?.data?.find(
+						(payment: any) => payment.customer.email === email,
+					);
+
+					// dispatch(
+					// storePaymentDetails({
+					// transaction_reference:
+					// response?.data?.data?.data?.transaction_reference,
+					// amount: totalPrice,
+					// }),
+					// );
+
+					// navigate("/success-payment");
+
+					if (userPayment) {
+						setPaymentStatus(userPayment.status);
+						clearInterval(interval); // Stop polling once the status is received
+					}
+				} catch (error) {
+					console.error("Error fetching payment status:", error);
+				}
+			}, 2000); // Poll every 5 seconds
+
+			return () => clearInterval(interval);
+		}
+	}, [transferConfirmed, email]);
+
 	return (
 		<Card className='w-full max-w-md mx-auto mt-20 mb-20'>
 			<CardHeader>
 				<CardTitle>Virtual Bank Account Details</CardTitle>
 				<CardDescription>
-					Please transfer {currency} {amount} to the following account
+					Please transfer {"NGN"} {totalPrice} to the following account
 				</CardDescription>
 			</CardHeader>
 
@@ -147,27 +176,39 @@ export default function BankTransfer({
 				{/* Virtual bank account details */}
 				<div className='space-y-2'>
 					<Label htmlFor='accountName'>Account Name</Label>
-					<Input id='accountName' value={accountName} readOnly />
+					<Input id='accountName' value={bankAccount.account_name} readOnly />
 				</div>
 				<div className='space-y-2'>
 					<Label htmlFor='accountNumber'>Account Number</Label>
-					<Input id='accountNumber' value={accountNumber} readOnly />
+					<Input
+						id='accountNumber'
+						value={bankAccount.account_number}
+						readOnly
+					/>
 				</div>
 				<div className='space-y-2'>
 					<Label htmlFor='bankName'>Bank Name</Label>
-					<Input id='bankName' value={bankName} readOnly />
+					<Input id='bankName' value={bankAccount.bank_name} readOnly />
 				</div>
 				<div className='space-y-2'>
 					<Label htmlFor='swiftCode'>SWIFT Code</Label>
-					<Input id='swiftCode' value={swiftCode} readOnly />
+					<Input id='swiftCode' value={bankAccount.bank_code} readOnly />
 				</div>
 				<div className='space-y-2'>
 					<Label htmlFor='amount'>Amount to Transfer</Label>
-					<Input id='amount' value={`${currency} ${amount}`} readOnly />
+					<Input id='amount' value={`${"NGN"} ${totalPrice}`} readOnly />
 				</div>
+
 				{!transferConfirmed && (
 					<div className='text-center text-lg font-semibold'>
 						Time remaining: {formatTime(timeLeft)}
+					</div>
+				)}
+
+				{/* Display payment status */}
+				{paymentStatus && (
+					<div className={`text-center text-lg font-semibold mt-4`}>
+						Payment Status: {paymentStatus}
 					</div>
 				)}
 			</CardContent>

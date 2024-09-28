@@ -1,5 +1,10 @@
+import LoaderComponent from "@/components/LoadingComponent";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { storeBankDetails } from "@/services/reducers";
+import { useAppSelector } from "@/services/store";
+import { IntializeBankTransfer } from "@/utils/ApiCalls";
 import {
 	BanIcon,
 	CreditCardIcon,
@@ -7,10 +12,52 @@ import {
 	BuildingIcon,
 	WalletIcon,
 } from "lucide-react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function PaymentPage() {
 	const navigate = useNavigate();
+	const user = useAppSelector(
+		(state) => state?.persistedReducer?.addresses || {},
+	);
+	const { toast } = useToast();
+	const [load, setLoad] = useState(false);
+	const dispatch = useDispatch();
+
+	const totalPrice = useAppSelector(
+		(state) => state.persistedReducer.totalPrice,
+	);
+	const onHandleBankTransfer = async () => {
+		setLoad(true);
+		try {
+			const response: any = await IntializeBankTransfer({
+				amount: totalPrice,
+				customer: {
+					name: user?.name,
+					email: user?.email,
+				},
+			});
+
+			setLoad(false);
+
+			if (response?.data?.success) {
+				dispatch(storeBankDetails(response.data.data?.data?.bank_account));
+				navigate("/store/select-payment/banktransfer");
+			} else {
+				setLoad(false);
+				toast({
+					title: "Error",
+					description: "Failed to initialize Account Transfer",
+					variant: "destructive",
+				});
+			}
+		} catch (err) {
+			return err;
+		}
+	};
+
+	if (load) return <LoaderComponent />;
 	return (
 		<div
 			className=' flex flex-col bg-gray-50 mt-20
@@ -33,7 +80,7 @@ export default function PaymentPage() {
 					</CardHeader>
 					<CardContent className='space-y-4'>
 						<Button
-							onClick={() => navigate("/store/select-payment/banktransfer")}
+							onClick={onHandleBankTransfer}
 							className='w-full justify-center bg-blue-600 text-white rounded-full'
 							variant='outline'>
 							<BanIcon className='mr-2 h-4 w-4' /> Bank Transfer
@@ -45,16 +92,27 @@ export default function PaymentPage() {
 							<CreditCardIcon className='mr-2 h-4 w-4' /> Card
 						</Button>
 						<Button
+							onClick={() => {
+								toast({
+									variant: "default",
+									title: "Coming Soon",
+									description: "This feature is not yet implemented",
+									duration: 3000,
+								});
+							}}
 							className='w-full justify-center bg-blue-600 text-white rounded-full'
 							variant='outline'>
 							<HashIcon className='mr-2 h-4 w-4' /> USSD
 						</Button>
 						<Button
-							className='w-full justify-center bg-blue-600 text-white rounded-full'
-							variant='outline'>
-							<BuildingIcon className='mr-2 h-4 w-4' /> Bank Account
-						</Button>
-						<Button
+							onClick={() => {
+								toast({
+									variant: "default",
+									title: "Coming Soon",
+									description: "This feature is not yet implemented",
+									duration: 3000,
+								});
+							}}
 							className='w-full justify-center bg-blue-600 text-white rounded-full'
 							variant='outline'>
 							<WalletIcon className='mr-2 h-4 w-4' /> Mobile Money

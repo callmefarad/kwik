@@ -6,6 +6,7 @@ import { useDispatch } from "react-redux";
 import {
 	addToCart,
 	clearCart,
+	reduceQuantity,
 	removeAProductCart,
 	removeFromCart,
 } from "@/services/reducers";
@@ -62,7 +63,9 @@ const Cart = () => {
 						<table className='w-full'>
 							<thead>
 								<tr className='border-b'>
-									<th className='text-left p-2'>PRODUCT</th>
+									<th className='text-left pr-20 sm:pr-0 lg:pr-0 xl:p-2'>
+										PRODUCT
+									</th>
 									<th className='text-right p-2'>PRICE</th>
 									<th className='text-center p-2'>QUANTITY</th>
 									<th className='text-right p-2'>TOTAL</th>
@@ -73,7 +76,7 @@ const Cart = () => {
 								{cart.map((item: any) => (
 									<tr key={item.id} className='border-b'>
 										<td className='p-2'>
-											<div className='flex items-center'>
+											<div className='flex items-center whitespace-nowrap overflow-hidden'>
 												<img
 													src={item.image?.url}
 													alt={item.name}
@@ -88,7 +91,7 @@ const Cart = () => {
 												<Button
 													variant='outline'
 													size='icon'
-													onClick={() => dispatch(removeFromCart(item.id))}>
+													onClick={() => dispatch(reduceQuantity(item._id))}>
 													<Minus className='h-4 w-4' />
 												</Button>
 												<span className='mx-2'>{item.quantity}</span>
@@ -107,7 +110,7 @@ const Cart = () => {
 											<Button
 												variant='ghost'
 												size='icon'
-												onClick={() => removeAProductCart(item.id)}>
+												onClick={() => removeAProductCart(item?._id)}>
 												<X className='h-4 w-4' />
 											</Button>
 										</td>

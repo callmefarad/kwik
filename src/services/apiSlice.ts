@@ -25,8 +25,16 @@ export const api = createApi({
 			query: (quaries: any) => `/store?storeLink=${quaries}`,
 			// providesTags: ["reviews"],
 		}),
+
+		ViewAllStoreOrders: builder.query({
+			query: (storeId: any) => `/${storeId}/purchase`,
+			// providesTags: ["reviews"],
+		}),
 	}),
 });
 
-export const { useGetStoreByOwnerQuery, useViewAllShopCustomerProductQuery } =
-	api;
+export const {
+	useGetStoreByOwnerQuery,
+	useViewAllShopCustomerProductQuery,
+	useViewAllStoreOrdersQuery,
+} = api;

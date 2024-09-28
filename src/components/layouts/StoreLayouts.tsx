@@ -139,9 +139,14 @@ export default function StoreLayouts() {
 							<p className='text-gray-600'></p>
 						</div>
 						<div className='flex items-center space-x-2'>
-							<span>Ali Musa</span>
-							<span className='text-sm text-gray-500'>Admin</span>
-							<div className='w-10 h-10 bg-gray-300 rounded-full'></div>
+							{/* <span>Ali Musa</span> */}
+							{/* <span className='text-sm text-gray-500'>Admin</span> */}
+							<div className='w-10 h-10 bg-gray-300 rounded-full'>
+								<img
+									src='https://www.kindpng.com/picc/m/24-248253_user-profile-default-image-png-clipart-png-download.png'
+									alt='Profile image'
+								/>
+							</div>
 						</div>
 					</div>
 				</header>

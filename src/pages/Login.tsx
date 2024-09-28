@@ -58,11 +58,11 @@ export default function Login() {
 					title: "Success!",
 					description: "Login successful.",
 				});
-				navigate("/app/store");
+				window.location.href = "/app/store";
 			} else if (response?.status >= 300 && response?.status < 400) {
 				toast({
 					title: "Error",
-					description: "Redirection error. Please try again.",
+					description: "Email or password incorrect",
 					variant: "destructive",
 				});
 			} else if (response?.status >= 400 && response?.status < 500) {

@@ -21,6 +21,14 @@ type PaymentType = {
 	amount: number;
 };
 
+type BankDetailsType = {
+	account_name: string;
+	account_number: string;
+	bank_name: string;
+	bank_code: string;
+	expiry_date_in_utc: string;
+};
+
 export interface AddressType {
 	name: string;
 	email: string;
@@ -36,6 +44,8 @@ const initialState = {
 	cartQuantity: 0,
 	addresses: {} as AddressType,
 	paymentDetails: {} as PaymentType,
+	storeLinkId: null,
+	bankDetails: {} as BankDetailsType,
 };
 
 export const Reducers = createSlice({
@@ -44,6 +54,13 @@ export const Reducers = createSlice({
 	reducers: {
 		updateUserDetails: (state, action: PayloadAction<UserDetails>) => {
 			state.currentUser = action.payload;
+		},
+		setStoreLinkId: (state, action) => {
+			state.storeLinkId = action.payload;
+		},
+
+		storeBankDetails: (state, action: PayloadAction<BankDetailsType>) => {
+			state.bankDetails = action.payload;
 		},
 
 		setUserDetails: (state, action: PayloadAction<AddressType>) => {
@@ -79,6 +96,26 @@ export const Reducers = createSlice({
 			state.totalPrice += action.payload.price;
 		},
 
+		reduceQuantity: (state, action: PayloadAction<number>) => {
+			const existingItem = state.cart.find(
+				(item) => item._id === action.payload,
+			);
+
+			if (existingItem) {
+				// Check if quantity is greater than 1, then decrement
+				if (existingItem.quantity > 1) {
+					existingItem.quantity -= 1;
+					state.totalQuantity -= 1;
+					state.totalPrice -= existingItem.price;
+				} else {
+					// Remove item if quantity becomes 0
+					state.cart = state.cart.filter((item) => item._id !== action.payload);
+					state.totalQuantity -= 1;
+					state.totalPrice -= existingItem.price;
+				}
+			}
+		},
+
 		removeFromCart: (state, action: PayloadAction<number>) => {
 			const existingItem = state.cart.find(
 				(item) => item._id === action.payload,
@@ -100,6 +137,8 @@ export const Reducers = createSlice({
 			const index = state.cart.findIndex(
 				(item) => item?._id === action.payload,
 			);
+
+			console.log("this is index", index);
 			if (index !== -1) {
 				const itemToRemove = state.cart[index];
 				state.totalQuantity -= itemToRemove.quantity;
@@ -120,6 +159,9 @@ export const {
 	addAddress,
 	removeAProductCart,
 	storePaymentDetails,
+	setStoreLinkId,
+	reduceQuantity,
+	storeBankDetails,
 } = Reducers.actions;
 
 export default Reducers.reducer;
