@@ -139,36 +139,41 @@ export default function Overview() {
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								{recentOrders?.map((order: any, index: number) => (
-									<TableRow key={order._id}>
-										{/* Order number */}
-										<TableCell>{index + 1}</TableCell>
-										{/* Placeholder for product image */}
-										<TableCell>
-											<div className='w-8 h-8 bg-gray-200 rounded-full'></div>
-										</TableCell>
-										{/* Product Name */}
-										<TableCell>{order?.products[0]?.productName}</TableCell>
-										{/* Quantity */}
-										<TableCell>{order?.products[0]?.quantity}</TableCell>
-										{/* Customer Name */}
-										<TableCell>{order?.customer?.name}</TableCell>
-										{/* Customer Address */}
-										<TableCell>{order?.customer?.address}</TableCell>
-										{/* Date - Formatting the createdAt field */}
-										<TableCell>
-											{format(new Date(order.createdAt), "dd/MM/yyyy")}
-										</TableCell>
-										{/* Payment Status */}
-										<TableCell>
-											<Badge variant={getStatusVariant(order?.paymentStatus)}>
-												{order?.paymentStatus}
-											</Badge>
-										</TableCell>
-										{/* Purchase No */}
-										<TableCell>{order._id}</TableCell>
-									</TableRow>
-								))}
+								{/* Map through orders and flatten the products */}
+								{recentOrders?.flatMap((order: any) =>
+									order?.products?.map((product: any) => (
+										<TableRow key={product._id}>
+											{/* Order number */}
+											<TableCell>{recentOrders?.indexOf(order) + 1}</TableCell>
+											{/* Placeholder for product image */}
+											<TableCell>
+												<div
+													className='w-8 h-8 bg-gray-200 
+rounded-full'></div>
+											</TableCell>
+											{/* Product Name */}
+											<TableCell>{product.productName}</TableCell>
+											{/* Quantity */}
+											<TableCell>{product.quantity}</TableCell>
+											{/* Customer Name */}
+											<TableCell>{order.customer.name}</TableCell>
+											{/* Customer Address */}
+											<TableCell>{order.customer.address}</TableCell>
+											{/* Date - Formatting the createdAt field */}
+											<TableCell>
+												{format(new Date(order.createdAt), "dd/MM/yyyy")}
+											</TableCell>
+											{/* Payment Status */}
+											<TableCell>
+												<Badge variant={getStatusVariant(order.paymentStatus)}>
+													{order.paymentStatus}
+												</Badge>
+											</TableCell>
+											{/* Purchase No */}
+											<TableCell>{order._id}</TableCell>
+										</TableRow>
+									)),
+								)}
 							</TableBody>
 						</Table>
 					)}

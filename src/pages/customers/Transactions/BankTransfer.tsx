@@ -17,16 +17,25 @@ import { setUserDetails, storePaymentDetails } from "@/services/reducers";
 import { useAppSelector } from "@/services/store";
 import { useNavigate } from "react-router-dom";
 import { Instance } from "@/utils/AxiosConfig";
+import { CreatingBankPayment } from "@/utils/ApiCalls";
+import { useToast } from "@/hooks/use-toast";
 
 export default function BankTransfer() {
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-
+	const { toast } = useToast();
 	// Access user details from Redux state
 	const user = useSelector(
 		(state: any) => state?.persistedReducer?.addresses || {},
 	);
+	const StoreId = useAppSelector((state) => state.persistedReducer.storeLinkId);
+	// Access user details from Redux state
+
+	const cart = useAppSelector((state) => state?.persistedReducer.cart);
 	const { name, email, address, phoneNumber } = user;
+
+	console.log("this is the cart", cart);
+
 	const bankAccount = useAppSelector(
 		(state) => state.persistedReducer.bankDetails,
 	);
@@ -62,6 +71,45 @@ export default function BankTransfer() {
 		setIsEditingAddress(false);
 	};
 
+	const handleCreateOrder = async () => {
+		const response2: any = await CreatingBankPayment({
+			amount: totalPrice,
+			user: {
+				name: name,
+				email: email,
+				address: address,
+			},
+			storeOwner: {
+				storeId: StoreId,
+			},
+			products: cart.map((item) => ({
+				productId: item._id,
+				productName: item.name,
+				quantity: item.quantity,
+				price: item.price,
+			})),
+		});
+
+		console.log("Creating bank payment response:", response2);
+
+		if (response2 && response2.status >= 200 && response2.status < 300) {
+			toast({
+				title: "Success!",
+				description: "Payment successful.",
+			});
+
+			setTimeout(() => {
+				navigate("/success-payment");
+			}, 3000);
+		} else {
+			console.error("Failed to create bank payment:", response2);
+			toast({
+				title: "Error!",
+				description: "Payment failed. Please try again.",
+			});
+		}
+	};
+
 	// Polling to check payment status from the backend after transfer is confirmed
 	useEffect(() => {
 		if (transferConfirmed) {
@@ -73,18 +121,17 @@ export default function BankTransfer() {
 						(payment: any) => payment.customer.email === email,
 					);
 
-					// dispatch(
-					// storePaymentDetails({
-					// transaction_reference:
-					// response?.data?.data?.data?.transaction_reference,
-					// amount: totalPrice,
-					// }),
-					// );
-
-					// navigate("/success-payment");
+					dispatch(
+						storePaymentDetails({
+							transaction_reference: response?.data?.payments[0]?.reference,
+							amount: totalPrice,
+						}),
+					);
+					navigate("/success-payment");
 
 					if (userPayment) {
 						setPaymentStatus(userPayment.status);
+						alert("yooo");
 						clearInterval(interval); // Stop polling once the status is received
 					}
 				} catch (error) {
@@ -216,7 +263,10 @@ export default function BankTransfer() {
 			<CardFooter>
 				<Button
 					className='w-full'
-					onClick={handleConfirmTransfer}
+					onClick={() => {
+						handleConfirmTransfer();
+						handleCreateOrder();
+					}}
 					disabled={transferConfirmed}>
 					{transferConfirmed
 						? "Transfer Confirmed"

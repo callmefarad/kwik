@@ -60,6 +60,15 @@ export const CreatingCardPayment = async (data: any) => {
 	}
 };
 
+export const CreatingBankPayment = async (data: any) => {
+	try {
+		const response = await Instance.post("/create-purchase", data);
+		return response;
+	} catch (err) {
+		return err;
+	}
+};
+
 export const IntializeBankTransfer = async (data: any) => {
 	try {
 		const response = await Instance.post("/create-bank-payment", data);
