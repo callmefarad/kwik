@@ -72,40 +72,46 @@ export default function BankTransfer() {
 	};
 
 	const handleCreateOrder = async () => {
-		const response2: any = await CreatingBankPayment({
-			amount: totalPrice,
-			user: {
-				name: name,
-				email: email,
-				address: address,
-			},
-			storeOwner: {
-				storeId: StoreId,
-			},
-			products: cart.map((item) => ({
-				productId: item._id,
-				productName: item.name,
-				quantity: item.quantity,
-				price: item.price,
-			})),
-		});
-
-		console.log("Creating bank payment response:", response2);
-
-		if (response2 && response2.status >= 200 && response2.status < 300) {
-			toast({
-				title: "Success!",
-				description: "Payment successful.",
+		try {
+			const response2: any = await CreatingBankPayment({
+				amount: totalPrice,
+				user: {
+					name: name,
+					email: email,
+					address: address,
+				},
+				storeOwner: {
+					storeId: StoreId,
+				},
+				products: cart.map((item) => ({
+					productId: item._id,
+					productName: item.name,
+					quantity: item.quantity,
+					price: item.price,
+				})),
 			});
+			console.log("Creating bank payment response:", response2);
 
-			setTimeout(() => {
-				navigate("/success-payment");
-			}, 3000);
-		} else {
-			console.error("Failed to create bank payment:", response2);
+			if (response2 && response2.status >= 200 && response2.status < 300) {
+				toast({
+					title: "Success!",
+					description: "Payment successful.",
+				});
+				setTimeout(() => {
+					navigate("/success-payment");
+				}, 3000);
+			} else {
+				console.error("Failed to create bank payment:", response2);
+				toast({
+					title: "Error!",
+					description: "Payment failed. Please try again.",
+				});
+			}
+		} catch (error) {
+			console.error("Error during payment creation:", error);
 			toast({
 				title: "Error!",
-				description: "Payment failed. Please try again.",
+				description: "An error occurred while creating payment.",
 			});
 		}
 	};
@@ -116,32 +122,39 @@ export default function BankTransfer() {
 			const interval = setInterval(async () => {
 				try {
 					const response: any = await Instance.get("/payments");
-					console.log("this is the payment", response);
-					const userPayment = response?.data?.find(
-						(payment: any) => payment.customer.email === email,
+					console.log("This is the payment:", response);
+					const userPayment = response?.data?.payments[0]?.status;
+					console.log(
+						"This is the payment2:",
+						response?.data?.payments[0]?.status,
 					);
 
-					dispatch(
-						storePaymentDetails({
-							transaction_reference: response?.data?.payments[0]?.reference,
-							amount: totalPrice,
-						}),
-					);
-					navigate("/success-payment");
-
-					if (userPayment) {
-						setPaymentStatus(userPayment.status);
-						alert("yooo");
+					if (userPayment === "success") {
+						dispatch(
+							storePaymentDetails({
+								transaction_reference: response?.data?.payments[0]?.reference,
+								amount: totalPrice,
+							}),
+						);
+						console.log("i ran", userPayment);
+						setPaymentStatus(userPayment); // Set the payment status
 						clearInterval(interval); // Stop polling once the status is received
 					}
 				} catch (error) {
 					console.error("Error fetching payment status:", error);
 				}
-			}, 2000); // Poll every 5 seconds
+			}, 2000); // Poll every 2 seconds
 
 			return () => clearInterval(interval);
 		}
 	}, [transferConfirmed, email]);
+
+	// Trigger handleCreateOrder when the payment status is updated
+	useEffect(() => {
+		if (paymentStatus === "success") {
+			handleCreateOrder();
+		}
+	}, [paymentStatus]);
 
 	return (
 		<Card className='w-full max-w-md mx-auto mt-20 mb-20'>
@@ -265,7 +278,7 @@ export default function BankTransfer() {
 					className='w-full'
 					onClick={() => {
 						handleConfirmTransfer();
-						handleCreateOrder();
+						// handleCreateOrder();
 					}}
 					disabled={transferConfirmed}>
 					{transferConfirmed
